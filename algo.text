@@ -1,0 +1,68 @@
+
+ALGORITHM Dijkstra(G, s)
+
+// Dijkstra’s algorithm for single-source shortest paths
+// Input: A weighted connected graph G = (V, E) with positive weights and a start vertex s
+// Output: The shortest path length dv from s to every v ∈ V and the predecessor pv of each v
+Initialize(Q) // Priority queue initialization
+for each vertex v ∈ V do
+ dv ← INF // Initialize queue with infinite priority
+ pv ← null
+ Insert(Q, v, dv)
+ds ← 0
+Decrease(Q, s, ds)// Set starting node's distance to 0
+VT ← ∅// Visited set
+for i ← 1 to |V| do
+ u* ← DeleteMin(Q)// Remove vertex with smallest distance
+ VT ← VT ∪ {u*}
+ for each vertex u ∈ V - VT adjacent to u* do
+  if du* + w(u*, u) < du then
+   du ← du* + w(u*, u)
+   pu ← u*
+   Decrease(Q, u, du)
+Return distances dv and predecessors pv for all v ∈ V
+
+
+
+ALGORITHM Allocate(G, vehicle_id, vehicle_location)
+
+// Allocates the nearest available parking lot to a vehicle
+// Input: vehicle_id (String), vehicle_location (String)
+// Output: Allocation status message
+IF vehicle_id ∈ vehicle_map THEN
+  print -> "Vehicle already parked"
+ END IF
+ IF vehicle_location ∉ nodes THEN
+  print -> "Invalid location"
+ END IF
+ distances ← Dijkstra(G, vehicle_location)
+ Initialize min-heap min_heap ← ∅
+ FOR EACH lot_id ∈ nodes DO
+  IF nodes[lot_id].available > 0 THEN
+   INSERT (distances[lot_id], lot_id) INTO min_heap
+  END IF
+ END FOR
+ IF min_heap = ∅ THEN
+  print -> "No parking available"
+ END IF
+ (dist, nearest_lot_id) ← DeleteMin(min_heap)
+ nodes[nearest_lot_id].available ← nodes[nearest_lot_id].available - 1
+ vehicle_map[vehicle_id] ← nearest_lot_id
+ print -> "Vehicle allocated to lot"
+
+
+ALGORITHM Release(vehicle_id)
+
+// Releases the parked vehicle and updates lot availability
+// Input: vehicle_id (String)
+// Output: Release status message
+IF vehicle_id ∉ vehicle_map THEN
+  RETURN "Vehicle not parked"
+ END IF
+ lot_id ← vehicle_map[vehicle_id]
+ REMOVE vehicle_id FROM vehicle_map
+ nodes[lot_id].available ← nodes[lot_id].available + 1
+ LOG release event with timestamp to file
+ print -> "Vehicle released"
+
+
